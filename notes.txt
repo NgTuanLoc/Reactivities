@@ -1,0 +1,62 @@
+Section 1 Skeleton Walking
+
+    A walking skeleton is a tiny implementation of the system that performs a small end-to-end function. It need not use the final architecture, but its should link together the main architectural components. The architecture and the functionality can then evolve in parallel
+        - Clean architecture
+        - Creating the .NET projects
+        - Project architecture
+        - dotnet CLI
+        - .NET project files
+        - Running the .NET application
+        - Entity Framework
+        - Seeding Data
+        - Code first migrations
+        - Postman
+        - Git for source control
+
+    Project Structure
+        - API ref to Application
+        - Application ref to Domain, Persistence
+        - Persistence ref to Domain
+
+        + API: receive HTTp requests and response to client
+        + Application: process business logic
+        + Domain: contain the business entities => center of everything
+        + Persistence: provide the connection to the database and translate code into SQL queries
+
+    Script
+        Write-Host "About to Create the directory" -ForegroundColor Green
+        mkdir Reactivities
+        cd Reactivities
+        
+        Write-Host "About to create the solution and projects" -ForegroundColor Green
+        dotnet new sln
+        dotnet new webapi -n API --use-controllers
+        dotnet new classlib -n Application
+        dotnet new classlib -n Domain
+        dotnet new classlib -n Persistence
+
+        Write-Host "Adding projects to the solution" -ForegroundColor Green
+        dotnet sln add API/API.csproj
+        dotnet sln add Application/Application.csproj
+        dotnet sln add Domain/Domain.csproj
+        dotnet sln add Persistence/Persistence.csproj
+
+        Write-Host "Adding project references" -ForegroundColor Green
+        cd API
+        dotnet add reference ../Application/Application.csproj
+        cd ../Application
+        dotnet add reference ../Domain/Domain.csproj
+        dotnet add reference ../Persistence/Persistence.csproj
+        cd ../Persistence
+        dotnet add reference ../Domain/Domain.csproj
+        cd ..
+
+        Write-Host "Executing dotnet restore" -ForegroundColor Green
+        dotnet restore
+
+        Write-Host "Finished!" -ForegroundColor Green
+    Setup DB
+        docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=TuanLoc235@' -p 1433:1433 --name reactivities-db -d mcr.microsoft.com/mssql/server:2019-latest
+    dotnet ef
+        dotnet tool install --global dotnet-ef
+        dotnet ef migrations add InitialCreate -s API -p Persistence
